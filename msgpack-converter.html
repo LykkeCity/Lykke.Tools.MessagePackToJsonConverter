@@ -1,0 +1,69 @@
+<html>
+<head>
+    <!--[if lte IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.10/es5-shim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+    <![endif]-->
+    <script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    
+    <title>Messagepack to JSON converter</title>
+</head>
+
+<body style="padding: 20px">
+    <h2>Messagepack to JSON converter</h2>
+    
+    <div style="margin-top: 50px;">
+        <div>
+            Base64 encoded Messagepack formatted data:
+            <input id="base64" type="text" style="width: 100%; margin-top: 10px;"/>
+        </div>
+        <div style="margin-top: 20px; margin-left: 20px;">
+            <a class="btn btn-primary" href="#" role="button" onclick="convert();">Convert to JSON</a>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">    
+        Result:
+        <pre><code id="result" class="json" style="margin-top: 10px;"></code></pre>
+    </div>
+
+    
+    <script>
+        function convert()
+        {       
+            var result = document.getElementById("result");        
+            
+            try
+            {
+                var base64 = document.getElementById("base64").value;
+                var array = new Uint8Array(base64ToArrayBuffer(base64));
+                var data = msgpack.decode(array);
+                
+                result.innerText = JSON.stringify(data, null, 4);
+            
+                hljs.initHighlighting();
+            } catch(ex) {
+                result.innerText = ex;
+            }
+            
+        }
+        
+        function base64ToArrayBuffer(base64) {
+            var binary_string =  window.atob(base64);
+            var len = binary_string.length;
+            var bytes = new Uint8Array( len );
+            
+            for (var i = 0; i < len; i++)        {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            
+            return bytes.buffer;
+        }
+    </script>
+</body>
+</html>
